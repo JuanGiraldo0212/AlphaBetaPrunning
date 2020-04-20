@@ -19,38 +19,12 @@ def is_game_over(node):
 
 def generate_children(node, chosen_symbol): # TODO: Create a function to generate the children states for minimax evaluation
     children=[]
-    alpha=[]
     for i in range(len(node)):
         item=node[i]
         if( item is None):
             new_node=node.copy()
             new_node[i]=chosen_symbol
             children.append(new_node)
-            alpha.append(evaluation_function(new_node,chosen_symbol))
-    return children, max(alpha)
-
-def generate_children_bounded(node, chosen_symbol,alpha): # TODO: Create a function to generate the children states for minimax evaluation
-    children=[]
-    new_alpha=alpha
-    beta=0
-    for i in range(len(node)):
-        item=node[i]
-        if( item is None):
-            new_node=node.copy()
-            new_node[i]=chosen_symbol
-            if(evaluation_function(new_node,chosen_symbol)<=new_alpha or evaluation_function(new_node,chosen_symbol)==99999):
-                beta=evaluation_function(new_node,chosen_symbol)
-                children.append(new_node)
-                break
-            else:
-                if(evaluation_function(new_node,chosen_symbol)<beta):
-                    beta=evaluation_function(new_node,chosen_symbol)
-                children.append(new_node)
-        if(i==len(node)-1):
-            new_alpha=beta
-
-
-            
     return children
 
 def evaluation_function(node,chosen_symbol):
@@ -75,27 +49,7 @@ def alternate_symbol(symbol):
     return 'o' if symbol == 'x' else 'x'
 
 def mini_max_ab(node, is_maximizing_player_turn, chosen_symbol,alpha): # TODO: Modify this minimax in order to turn it into an alpha-beta pruning version with depth cutting
-    game_result = is_game_over(node)
-
-    if game_result[0]:
-        if game_result[1] is None:
-            return 0, node
-
-        return (-1, node) if is_maximizing_player_turn else (1, node)
-
-    if is_maximizing_player_turn:
-        children = generate_children(node, chosen_symbol)
-    else:
-        children=generate_children_bounded(node,chosen_symbol,alpha)
-    children_results = list(map(
-        lambda child: [
-            mini_max_ab(child, not is_maximizing_player_turn, alternate_symbol(chosen_symbol),children[1])[0],
-            child
-        ],
-        children[0]
-    ))
-
-    return max(children_results, key=str) if is_maximizing_player_turn else min(children_results, key=str)
+    return 0
 
 def mini_max(node, is_maximizing_player_turn, chosen_symbol):
     game_result = is_game_over(node)
@@ -109,7 +63,7 @@ def mini_max(node, is_maximizing_player_turn, chosen_symbol):
     children = generate_children(node, chosen_symbol)[0]
     children_results = list(map(
         lambda child: [
-            mini_max(child, not is_maximizing_player_turn, alternate_symbol(chosen_symbol))[0],
+            mini_max(child, not is_maximizing_player_turn, alternate_symbol(chosen_symbol)),
             child
         ],
         children
